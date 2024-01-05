@@ -1,3 +1,5 @@
+use anyhow::{bail, Result};
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Color {
     pub r: u8,
@@ -96,3 +98,25 @@ pub static NORD_AURORA: [Color; 5] = [
         b: 173,
     },
 ];
+
+#[derive(Debug, Clone)]
+pub enum Scheme {
+    Frost(Vec<Color>),
+    PolarNight(Vec<Color>),
+    SnowStorm(Vec<Color>),
+    Aurora(Vec<Color>),
+}
+
+impl std::str::FromStr for Scheme {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Scheme> {
+        match s {
+            "frost" => Ok(Scheme::Frost(NORD_FROST.to_vec())),
+            "polar_night" => Ok(Scheme::PolarNight(NORD_POLAR_NIGHT.to_vec())),
+            "snow_storm" => Ok(Scheme::SnowStorm(NORD_SNOW_STORM.to_vec())),
+            "aurora" => Ok(Scheme::Aurora(NORD_AURORA.to_vec())),
+            _ => bail!("unknown scheme"),
+        }
+    }
+}
