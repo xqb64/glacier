@@ -9,16 +9,19 @@ struct Opt {
 
     #[structopt(short, long, help = "[frost, polar_night, snow_storm, aurora]")]
     schemes: Vec<Scheme>,
+
+    #[structopt(short, long)]
+    out_file: String,
 }
 
 fn main() {
     let opts = Opt::from_args();
-    if let Err(e) = run(opts.path, opts.schemes) {
+    if let Err(e) = run(opts.path, opts.schemes, opts.out_file) {
         eprintln!("glacier: {:?}", e);
     }
 }
 
-fn run(path: impl AsRef<Path>, schemes: Vec<Scheme>) -> Result<()> {
+fn run(path: impl AsRef<Path>, schemes: Vec<Scheme>, out_file: impl AsRef<Path>) -> Result<()> {
     let image = image::open(path)?;
 
     let mut valid_colors = vec![];
@@ -66,7 +69,7 @@ fn run(path: impl AsRef<Path>, schemes: Vec<Scheme>) -> Result<()> {
     }
 
     image::save_buffer_with_format(
-        "out.png",
+        out_file,
         &colorized
             .iter()
             .flat_map(|color| vec![color.r, color.g, color.b])
